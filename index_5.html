@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="한낮의 해바라기 · 아버지의 시">
+<title>한낮의 해바라기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@700;800&display=swap">
+<style>
+/* 레이아웃: 연노랑 종이 위에 책 한 권. 표지(해바라기) → 차례(점선·쪽수) → 한 쪽에 시 한 편, 앞 장/다음 장으로 넘김 */
+:root{
+  color-scheme: light;
+  --paper:#FBF1C7;     /* 연노랑 바탕 */
+  --page:#FFFBEA;      /* 책 속지 */
+  --ink:#3B2E1E;       /* 갈색 먹 */
+  --muted:#7C6A4C;
+  --line:#E9D99E;
+  --sun:#F2B705;       /* 해바라기 꽃잎 */
+  --sun-deep:#B97F05;
+  --seed:#5B3A1B;      /* 씨앗 */
+  --leaf:#6C7A3A;
+  --f-title:"Nanum Myeongjo","AppleMyungjo","Batang",serif;
+  --f-poem:"Gowun Batang","AppleMyungjo","Batang",serif;
+  --f-ui:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--paper)}
+body{color:var(--ink);font-family:var(--f-poem);font-size:17px;line-height:1.9;margin:0;word-break:keep-all;overflow-wrap:anywhere;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid var(--sun-deep);outline-offset:3px;border-radius:4px}
+
+/* 상단 */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px)}
+.top-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:18px;padding-block:14px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));font-family:var(--f-ui);font-size:15px}
+.top-in .name{font-family:var(--f-title);font-weight:800;font-size:17px;text-decoration:none;margin-right:auto;letter-spacing:.02em}
+.top-in a.nav{text-decoration:none;color:var(--muted)}
+.top-in a.nav:hover,.top-in a.nav[aria-current="page"]{color:var(--ink)}
+.music{display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:14px;color:var(--ink);background:var(--page);border:1px solid var(--line);border-radius:99px;padding:5px 13px 5px 9px;cursor:pointer}
+.music .dot{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,var(--seed) 0 34%,var(--sun) 36% 100%)}
+.music[aria-pressed="true"] .dot{animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+main{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:8px 80px}
+
+/* 표지 */
+.cover{max-width:760px;margin:0 auto;display:grid;justify-items:center;text-align:center;gap:6px;padding-block:28px 40px}
+.cover canvas{width:min(78vw,340px);height:auto;aspect-ratio:1;max-width:100%}
+.cover .kicker{font-family:var(--f-ui);font-size:14px;letter-spacing:.35em;color:var(--muted);margin-top:8px}
+.cover h1{font-family:var(--f-title);font-weight:800;font-size:clamp(38px,8vw,58px);line-height:1.2;margin:4px 0 2px;letter-spacing:.04em}
+.cover .by{font-size:18px;color:var(--muted);margin:0 0 26px}
+.open{font-family:var(--f-ui);font-size:17px;color:var(--ink);background:var(--sun);border:0;border-radius:99px;padding:13px 30px;cursor:pointer;box-shadow:0 3px 0 var(--sun-deep);transition:transform .15s}
+.open:hover{transform:translateY(-1px)}
+.open:active{transform:translateY(2px);box-shadow:0 1px 0 var(--sun-deep)}
+.cover .hint{font-family:var(--f-ui);font-size:13.5px;color:var(--muted);margin-top:12px}
+
+/* 책 속지 */
+.sheet{max-width:640px;margin:18px auto 0;background:var(--page);border:1px solid var(--line);border-radius:4px 4px 4px 4px;box-shadow:0 1px 0 var(--line),0 18px 40px -26px rgba(91,58,27,.35);padding:clamp(28px,6vw,64px) clamp(22px,7vw,72px) 40px;position:relative}
+.sheet::before{content:"";position:absolute;inset:0 auto 0 0;width:14px;background:linear-gradient(90deg,rgba(91,58,27,.07),transparent);border-radius:4px 0 0 4px}
+.pageno{text-align:center;font-family:var(--f-ui);color:var(--muted);font-size:13.5px;margin-top:36px;letter-spacing:.2em}
+
+/* 차례 */
+.toc h2,.words h2{font-family:var(--f-title);font-weight:800;font-size:28px;text-align:center;margin:0 0 6px;letter-spacing:.3em}
+.toc .sub{text-align:center;font-family:var(--f-ui);font-size:14px;color:var(--muted);margin:0 0 30px}
+.toc .part{font-family:var(--f-ui);font-size:14px;letter-spacing:.2em;color:var(--sun-deep);margin:26px 0 8px;display:flex;align-items:center;gap:10px}
+.toc .part::after{content:"";flex:1;height:1px;background:var(--line)}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc li a{display:flex;align-items:baseline;gap:8px;text-decoration:none;padding:7px 0;font-size:18px}
+.toc li a .t{flex:none;max-width:75%}
+.toc li a .lead{flex:1;border-bottom:2px dotted var(--line);transform:translateY(-5px);min-width:20px}
+.toc li a .n{flex:none;font-family:var(--f-ui);font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.toc li a:hover .t{color:var(--sun-deep)}
+.toc .wordslink{display:block;text-align:center;margin-top:30px;font-family:var(--f-ui);font-size:15px;color:var(--muted)}
+.sample{display:inline-block;font-family:var(--f-ui);font-size:12px;background:var(--paper);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:0 9px;margin-left:6px;vertical-align:3px}
+.note{font-family:var(--f-ui);font-size:14px;color:var(--muted);background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:10px 14px;margin:0 0 24px;line-height:1.7}
+
+/* 시 */
+.poem h2{font-family:var(--f-title);font-weight:800;font-size:clamp(26px,5vw,32px);text-align:center;margin:0 0 6px;text-wrap:balance;letter-spacing:.06em}
+.poem .meta{text-align:center;font-family:var(--f-ui);font-size:14px;color:var(--muted);margin:0 0 34px}
+.poem .flower{display:block;margin:0 auto 14px;width:30px;height:30px}
+.poem .body{width:fit-content;max-width:100%;margin:0 auto;white-space:pre-wrap;font-size:clamp(17px,2.6vw,19px);line-height:2.15;letter-spacing:.01em}
+.turn{display:flex;justify-content:space-between;gap:12px;margin-top:40px;font-family:var(--f-ui);font-size:15px}
+.turn a{text-decoration:none;color:var(--muted);max-width:48%}
+.turn a:hover{color:var(--ink)}
+.turn a b{display:block;font-family:var(--f-poem);font-weight:400;color:var(--ink);font-size:16px}
+.turn .next{text-align:right;margin-left:auto}
+
+.photo{margin:-8px auto 30px;max-width:520px;background:#fff;padding:10px 10px 12px;border-radius:3px;box-shadow:0 1px 2px rgba(91,58,27,.12),0 14px 30px -18px rgba(91,58,27,.45);transform:rotate(-.6deg)}
+.photo img{display:block;width:100%;height:auto;border-radius:2px}
+.words .body{font-size:17px;line-height:2;max-width:32em;margin:24px auto 0}
+
+/* 음악 안내 */
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:520px){.top-in{gap:12px;font-size:14px}.music .lbl{display:none}.music{padding:6px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <a class="name" href="#cover">한낮의 해바라기</a>
+    <a class="nav" href="#contents" id="nav-toc">차례</a>
+    <a class="nav" href="#words" id="nav-words">시인의 말</a>
+    <button class="music" id="music" type="button" aria-pressed="false" aria-label="배경 음악 켜기"><span class="dot"></span><span class="lbl">음악 켜기</span></button>
+  </div>
+</header>
+<main id="main"></main>
+
+<script>
+// ===== 시 원고 =====
+// 새 시는 poems 목록 맨 뒤에 같은 모양으로 추가합니다. 줄바꿈은 그대로, 연 사이는 빈 줄 하나.
+const BOOK = {
+  title: '한낮의 해바라기',
+  author: '아버지',
+  words: '아버지께 받은 "시인의 말"이 이 자리에 들어갑니다.\n\n시를 쓰게 된 이야기, 해바라기를 좋아하시는 이유,\n가족에게 하고 싶은 말 같은 것을\n아버지 말투 그대로 담으면 좋습니다.',
+  // 이미지: images 폴더에 "제목.png"(또는 .jpg .jpeg .webp)로 넣으면 시 위에 자동으로 붙습니다.
+  poems: [
+    { id:'p1', part:'11월', title:'시래기 된장국', date:'11월 8일', body:
+`삶의 초록을 바람에 털어내고
+물기가 얼었다 녹았다
+바짝 마른 그 잎이
+
+비로소 세상에서
+가장 부드러운 것으로 돌아와
+내 앞에 살포시 그 몸을 뉘였는데
+
+나는 나를 온전히 허물어
+그 사람의 허기진 마음을
+이 국 한 사발처럼
+정갈하게 채워준 적 있었던가
+
+헛헛한 마음의 깊은 곳까지
+이렇게 다정하게 스며들어 보았던가
+
+사랑도 이렇게
+모진 계절을 건너와야 했다면
+
+나도 모진 계절을 말려서
+그 사람의 아린 허기를
+따뜻하게 채우고 싶네` },
+  ],
+};
+// ===================
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const P = BOOK.poems;
+const pageOf = i => i + 3; // 표지·차례·시인의 말 다음부터 쪽수
+
+// ---------- 해바라기 (씨앗은 황금각 137.5°로 배열) ----------
+function drawSunflower(cv, t){
+  const ctx = cv.getContext('2d'), S = cv.width, c = S/2;
+  ctx.clearRect(0,0,S,S);
+  const sway = Math.sin(t/2600) * 0.025;
+  ctx.save(); ctx.translate(c,c); ctx.rotate(sway);
+  const R = S*0.2, petals = 34;
+  for (let layer = 0; layer < 2; layer++) {
+    for (let i = 0; i < petals; i++) {
+      const a = (i + layer*0.5) / petals * Math.PI*2;
+      ctx.save(); ctx.rotate(a);
+      const len = S*(layer ? 0.21 : 0.24), w = S*0.045;
+      const g = ctx.createLinearGradient(R*0.8,0,R+len,0);
+      g.addColorStop(0, layer ? '#D99A06' : '#E7A904'); g.addColorStop(1, layer ? '#F6C93A' : '#F9D35A');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.moveTo(R*0.8,0);
+      ctx.quadraticCurveTo(R+len*0.45, -w, R+len, 0);
+      ctx.quadraticCurveTo(R+len*0.45, w, R*0.8, 0);
+      ctx.fill(); ctx.restore();
+    }
+  }
+  ctx.fillStyle = '#4A2E14'; ctx.beginPath(); ctx.arc(0,0,R*1.02,0,Math.PI*2); ctx.fill();
+  const N = 420, GA = Math.PI*(3-Math.sqrt(5));
+  for (let i = 1; i < N; i++) {
+    const r = R*0.98*Math.sqrt(i/N), a = i*GA;
+    ctx.fillStyle = i % 3 ? '#6B4520' : '#8A5C2A';
+    ctx.beginPath(); ctx.arc(Math.cos(a)*r, Math.sin(a)*r, S*0.0062*(0.6+0.6*i/N), 0, Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+let raf;
+function startFlower(){
+  const cv = $('#sun'); if (!cv) return;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  cancelAnimationFrame(raf);
+  const loop = t => { drawSunflower(cv, t); if (!still && document.body.contains(cv)) raf = requestAnimationFrame(loop); };
+  loop(0);
+}
+const miniFlower = `<svg class="flower" viewBox="0 0 30 30" aria-hidden="true">${Array.from({length:14},(_,i)=>`<ellipse cx="15" cy="5.2" rx="2.2" ry="5" fill="#F2B705" transform="rotate(${i*360/14} 15 15)"/>`).join('')}<circle cx="15" cy="15" r="5.6" fill="#5B3A1B"/></svg>`;
+
+// ---------- 화면 ----------
+function viewCover(){
+  return `<section class="cover">
+    <canvas id="sun" width="680" height="680" aria-label="해바라기 그림"></canvas>
+    <h1>${esc(BOOK.title)}</h1>
+    <p class="by">${esc(BOOK.author)}의 시 ${P.length}편</p>
+    <button class="open" type="button" id="open">시집 펼치기</button>
+    <div class="hint">펼치면 잔잔한 피아노 음악이 함께 나옵니다</div>
+  </section>`;
+}
+function viewContents(){
+  const parts = [...new Set(P.map(p => p.part))];
+  return `<article class="sheet toc">
+    <h2>차례</h2><p class="sub">${esc(BOOK.author)}의 시 ${P.length}편</p>
+    ${P.some(p=>p.sample) ? `<p class="note">지금은 화면을 보여 드리려고 김소월의 시(저작권 만료)를 예시로 넣어 두었습니다. 아버지 시로 바뀝니다.</p>` : ''}
+    ${parts.map(pt => `<div class="part">${esc(pt)}</div><ol>${P.map((p,i)=>[p,i]).filter(([p])=>p.part===pt).map(([p,i]) =>
+      `<li><a href="#${p.id}"><span class="t">${esc(p.title)}${p.sample?'<span class="sample">예시</span>':''}</span><span class="lead"></span><span class="n">${pageOf(i)}</span></a></li>`).join('')}</ol>`).join('')}
+    <a class="wordslink" href="#words">시인의 말 →</a>
+    <div class="pageno">— 1 —</div>
+  </article>`;
+}
+function viewWords(){
+  return `<article class="sheet words"><h2>시인의 말</h2>${miniFlower}<div class="body" style="white-space:pre-wrap">${esc(BOOK.words)}</div><div class="pageno">— 2 —</div></article>`;
+}
+function viewPoem(i){
+  const p = P[i], prev = P[i-1], next = P[i+1];
+  return `<article class="sheet poem">
+    <figure class="photo"><img data-base="${esc(p.image || 'images/' + p.title)}" alt="${esc(p.title)}" hidden></figure>
+    ${miniFlower}
+    <h2>${esc(p.title)}</h2>
+    <p class="meta">${esc(p.date)}${p.sample?' · 예시':''}</p>
+    <div class="body">${esc(p.body)}</div>
+    <nav class="turn" aria-label="시 넘기기">
+      ${prev ? `<a href="#${prev.id}">← 앞 장<b>${esc(prev.title)}</b></a>` : `<a href="#contents">← 차례로</a>`}
+      ${next ? `<a class="next" href="#${next.id}">다음 장 →<b>${esc(next.title)}</b></a>` : `<a class="next" href="#contents">차례로 →</a>`}
+    </nav>
+    <div class="pageno">— ${pageOf(i)} —</div>
+  </article>`;
+}
+function route(){
+  const h = (location.hash || '#cover').slice(1);
+  const i = P.findIndex(p => p.id === h);
+  let html;
+  if (i >= 0) html = viewPoem(i);
+  else if (h === 'contents') html = viewContents();
+  else if (h === 'words') html = viewWords();
+  else html = viewCover();
+  $('#main').innerHTML = html;
+  $('#nav-toc').toggleAttribute('aria-current', h === 'contents'); if (h === 'contents') $('#nav-toc').setAttribute('aria-current','page');
+  $('#nav-words').toggleAttribute('aria-current', h === 'words'); if (h === 'words') $('#nav-words').setAttribute('aria-current','page');
+  document.querySelector('.top-in .name').style.visibility = (h === 'cover' || !h) && i < 0 && h !== 'contents' && h !== 'words' ? 'hidden' : 'visible';
+  if ($('#sun')) startFlower();
+  document.querySelectorAll('img[data-base]').forEach(loadImage);
+}
+// 제목과 같은 이름의 이미지를 확장자 순서대로 찾아 붙입니다
+const EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG'];
+function loadImage(img, k = 0){
+  if (k >= EXTS.length) { img.closest('figure').remove(); return; }
+  img.onload = () => { img.hidden = false; };
+  img.onerror = () => loadImage(img, k + 1);
+  img.src = encodeURI(img.dataset.base + EXTS[k]);
+}
+
+// ---------- 음악: 이 페이지가 직접 연주하는 피아노곡 (새로 지은 곡이라 저작권 없음) ----------
+const Music = (() => {
+  let ac, master, verb, timer, nextTime = 0, step = 0, on = false;
+  const BPM = 66, BEAT = 60 / BPM;
+  const mf = m => 440 * Math.pow(2, (m - 69) / 12);
+  // F장조 8마디: F - Dm - B♭ - C - F - Dm - B♭ - C
+  const BASS = [[53,60,57,60],[50,57,53,57],[46,53,62,53],[48,55,64,55],[53,60,57,60],[50,57,53,57],[46,53,62,53],[48,55,64,60]];
+  const MEL = [
+    [[0,69,1.5],[1.5,67,.5],[2,69,1],[3,72,1]],
+    [[0,74,2],[2,72,1],[3,69,1]],
+    [[0,70,1.5],[1.5,69,.5],[2,67,1],[3,65,1]],
+    [[0,67,3]],
+    [[0,69,1],[1,72,1],[2,77,1.5],[3.5,76,.5]],
+    [[0,74,1.5],[1.5,72,.5],[2,69,2]],
+    [[0,70,1],[1,74,1],[2,72,1],[3,67,1]],
+    [[0,67,1.5],[1.5,69,.5],[2,65,2]],
+  ];
+  function impulse(){
+    const len = ac.sampleRate * 2.8, buf = ac.createBuffer(2, len, ac.sampleRate);
+    for (let ch = 0; ch < 2; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.6); }
+    return buf;
+  }
+  function note(m, t, dur, vel){
+    const f = mf(m), g = ac.createGain(), lp = ac.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 1800 + vel*1600;
+    const o1 = ac.createOscillator(), o2 = ac.createOscillator(), g2 = ac.createGain();
+    o1.type = 'triangle'; o1.frequency.value = f;
+    o2.type = 'sine'; o2.frequency.value = f*2; g2.gain.value = 0.18;
+    o1.connect(g); o2.connect(g2).connect(g); g.connect(lp).connect(master);
+    const end = t + Math.max(dur*BEAT, 0.6) + 1.6;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vel, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(vel*0.35, t + 0.35);
+    g.gain.exponentialRampToValueAtTime(0.0001, end);
+    o1.start(t); o2.start(t); o1.stop(end + 0.05); o2.stop(end + 0.05);
+  }
+  function schedule(){
+    while (nextTime < ac.currentTime + 0.6) {
+      const bar = step % 8, loop = Math.floor(step / 8);
+      BASS[bar].forEach((m, k) => note(m, nextTime + k*BEAT, 1, 0.075 + Math.random()*0.015));
+      MEL[bar].forEach(([b, m, d]) => note(m + (loop % 2 ? 12 : 0) * (loop % 4 === 3 ? 1 : 0), nextTime + b*BEAT + Math.random()*0.012, d, 0.11 + Math.random()*0.02));
+      nextTime += 4*BEAT; step++;
+    }
+  }
+  function start(){
+    if (!ac) {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+      ac = new AC(); master = ac.createGain(); master.gain.value = 0;
+      verb = ac.createConvolver(); verb.buffer = impulse();
+      const wet = ac.createGain(); wet.gain.value = 0.35;
+      master.connect(ac.destination); master.connect(verb).connect(wet).connect(ac.destination);
+    }
+    ac.resume();
+    master.gain.cancelScheduledValues(ac.currentTime);
+    master.gain.setTargetAtTime(0.55, ac.currentTime, 0.8);
+    nextTime = ac.currentTime + 0.1; clearInterval(timer); timer = setInterval(schedule, 120); schedule();
+    on = true; return true;
+  }
+  function stop(){ if (!ac) return; master.gain.setTargetAtTime(0, ac.currentTime, 0.4); setTimeout(() => { if (!on) { clearInterval(timer); ac.suspend(); } }, 1600); on = false; }
+  return { start, stop, get on(){ return on; } };
+})();
+function setMusicUI(){
+  const b = $('#music'); b.setAttribute('aria-pressed', String(Music.on));
+  b.querySelector('.lbl').textContent = Music.on ? '음악 끄기' : '음악 켜기';
+  b.setAttribute('aria-label', Music.on ? '배경 음악 끄기' : '배경 음악 켜기');
+}
+$('#music').addEventListener('click', () => { Music.on ? Music.stop() : Music.start(); setMusicUI(); });
+document.addEventListener('click', e => {
+  if (e.target.id === 'open') { if (!Music.on) Music.start(); setMusicUI(); location.hash = '#contents'; }
+});
+document.addEventListener('keydown', e => {
+  const h = location.hash.slice(1), i = P.findIndex(p => p.id === h); if (i < 0) return;
+  if (e.key === 'ArrowRight' && P[i+1]) location.hash = '#' + P[i+1].id;
+  if (e.key === 'ArrowLeft' && P[i-1]) location.hash = '#' + P[i-1].id;
+});
+window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
+route();
+</script>
+</body>
+</html>
