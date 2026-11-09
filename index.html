@@ -207,8 +207,8 @@ const BOOK = {
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // ===== Supabase 설정 (시집 전용 프로젝트) =====
-const SUPABASE_URL = '';       // 예: https://xxxx.supabase.co
-const SUPABASE_ANON_KEY = '';  // Project Settings > API Keys 의 anon public 키
+const SUPABASE_URL = 'https://xnzytzlqhgluiiomrkwt.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_7rb8aS6JxYk_c7vHENqgfQ_1fFKN0zh';
 const BUCKET = 'poem-images';
 // =============================================
 const SB = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
