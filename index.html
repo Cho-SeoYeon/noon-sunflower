@@ -220,13 +220,13 @@ function normalize(list){
     return { ...r, id: r.id != null ? 'p' + r.id : 'p' + (k + 1), dbId: r.id ?? null, y, m, d,
       part: `${y}년 ${m}월`, date: `${m}월 ${d}일`,
       imageUrl: r.image_path && SB ? SB.storage.from(BUCKET).getPublicUrl(r.image_path).data.publicUrl : '' };
-  }).sort((a, b) => (b.written_on > a.written_on) - (b.written_on < a.written_on) || (b.dbId ?? 0) - (a.dbId ?? 0));
+  }).sort((a, b) => (a.written_on > b.written_on) - (a.written_on < b.written_on) || (a.dbId ?? 0) - (b.dbId ?? 0));
 }
 P = normalize(BOOK.poems);
 const pageOf = i => i + 3; // 표지·차례·시인 소개 다음부터 쪽수
 async function loadPoems(){
   if (!SB) return;
-  const { data, error } = await SB.from('poems').select('*').order('written_on', { ascending: false });
+  const { data, error } = await SB.from('poems').select('*').order('written_on', { ascending: true });
   if (error) { console.warn('시를 불러오지 못했습니다', error); return; }
   P = normalize(data); route();
 }
