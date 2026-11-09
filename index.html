@@ -292,12 +292,15 @@ function route(){
   document.querySelectorAll('img[data-base]').forEach(loadImage);
 }
 // 제목과 같은 이름의 이미지를 확장자 순서대로 찾아 붙입니다
-const EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG'];
+const EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG', '.JPEG'];
+// images 폴더 안과 맨 바깥(루트) 두 곳을 모두 찾습니다
+function candidates(base){ const name = base.replace(/^images\//, ''); return [...EXTS.map(e => 'images/' + name + e), ...EXTS.map(e => name + e)]; }
 function loadImage(img, k = 0){
-  if (k >= EXTS.length) { if (!img.parentElement.querySelector('.ph')) img.closest('figure').remove(); else img.remove(); return; }
+  const list = img._c || (img._c = candidates(img.dataset.base));
+  if (k >= list.length) { if (!img.parentElement.querySelector('.ph')) img.closest('figure').remove(); else img.remove(); return; }
   img.onload = () => { img.hidden = false; const ph = img.parentElement.querySelector('.ph'); if (ph) ph.remove(); };
   img.onerror = () => loadImage(img, k + 1);
-  img.src = encodeURI(img.dataset.base + EXTS[k]);
+  img.src = encodeURI(list[k]);
 }
 
 // ---------- 음악: 이 페이지가 직접 연주하는 피아노곡 (새로 지은 곡이라 저작권 없음) ----------
