@@ -113,6 +113,28 @@ main{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px
 .quote p{margin:0;white-space:pre-line;font-size:18px;line-height:2}
 .quote cite{display:block;margin-top:8px;font-style:normal;font-family:var(--f-ui);font-size:13.5px;color:var(--muted)}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:20}
+.foot{text-align:center;padding-block:0 40px;font-family:var(--f-ui);font-size:13px}
+.foot a{color:var(--muted);text-decoration:none;opacity:.7}
+.adm{text-align:center;font-family:var(--f-ui);font-size:14px;margin:-14px 0 14px}
+.adm a{color:var(--sun-deep)}
+.form-sheet h2{font-family:var(--f-title);font-weight:800;font-size:26px;text-align:center;margin:0 0 24px;letter-spacing:.1em}
+.center{text-align:center;justify-content:center}
+.pform{display:flex;flex-direction:column;gap:8px;font-family:var(--f-ui)}
+.pform>label{font-size:15px;font-weight:700;margin-top:10px}
+.pform label small{font-weight:400;color:var(--muted);margin-left:6px}
+.pform input[type=email],.pform input[type=password],.pform input:not([type]),.pform input[type=date],.pform textarea{font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+.pform textarea{font-family:var(--f-poem);font-size:17px;line-height:1.9;resize:vertical}
+.pform input:focus,.pform textarea:focus{outline:none;border-color:var(--sun-deep)}
+.imgpick{display:flex;flex-direction:column;gap:8px}
+.imgpick img{max-width:220px;border-radius:6px;border:1px solid var(--line)}
+.chk{font-size:14px;display:flex;gap:6px;align-items:center}
+.btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:18px}
+.btn{font:inherit;font-family:var(--f-ui);font-size:16px;border-radius:99px;padding:10px 22px;cursor:pointer;border:0;background:var(--sun);color:var(--ink);text-decoration:none;box-shadow:0 2px 0 var(--sun-deep)}
+.btn.ghost{background:transparent;box-shadow:none;border:1.5px solid var(--line)}
+.btn.danger{background:transparent;box-shadow:none;border:1.5px solid #B4472B;color:#B4472B}
+.btn.danger.armed{background:#B4472B;color:#fff}
+.btn:disabled{opacity:.6;cursor:wait}
+.msg{font-size:14.5px}.msg.err{color:#B4472B}
 .words .body{font-size:17px;line-height:2;max-width:32em;margin:24px auto 0}
 
 /* 음악 안내 */
@@ -130,11 +152,13 @@ main{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px
   </div>
 </header>
 <main id="main"></main>
+<footer class="foot" id="foot"></footer>
 <canvas id="fx" aria-hidden="true"></canvas>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 // ===== 시 원고 =====
-// 새 시는 poems 목록 맨 뒤에 같은 모양으로 추가합니다. 줄바꿈은 그대로, 연 사이는 빈 줄 하나.
+// DB에 연결되면 DB의 시를 보여 주고, 연결 전에는 아래 시를 보여 줍니다.
 const BOOK = {
   title: '한낮의 해바라기',
   author: '아버지',
@@ -153,7 +177,7 @@ const BOOK = {
   },
   // 이미지: images 폴더에 "제목.png"(또는 .jpg .jpeg .webp)로 넣으면 시 위에 자동으로 붙습니다.
   poems: [
-    { id:'p1', part:'11월', title:'시래기 된장국', date:'11월 8일', body:
+    { title:'시래기 된장국', written_on:'2026-11-08', body:
 `삶의 초록을 바람에 털어내고
 물기가 얼었다 녹았다
 바짝 마른 그 잎이
@@ -182,8 +206,30 @@ const BOOK = {
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const P = BOOK.poems;
-const pageOf = i => i + 3; // 표지·차례·시인의 말 다음부터 쪽수
+// ===== Supabase 설정 (시집 전용 프로젝트) =====
+const SUPABASE_URL = '';       // 예: https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = '';  // Project Settings > API Keys 의 anon public 키
+const BUCKET = 'poem-images';
+// =============================================
+const SB = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+let ADMIN = false, EMAIL = '';
+let P = [];
+function normalize(list){
+  return list.map((r, k) => {
+    const [y, m, d] = String(r.written_on).split('-').map(Number);
+    return { ...r, id: r.id != null ? 'p' + r.id : 'p' + (k + 1), dbId: r.id ?? null, y, m, d,
+      part: `${y}년 ${m}월`, date: `${m}월 ${d}일`,
+      imageUrl: r.image_path && SB ? SB.storage.from(BUCKET).getPublicUrl(r.image_path).data.publicUrl : '' };
+  }).sort((a, b) => (b.written_on > a.written_on) - (b.written_on < a.written_on) || (b.dbId ?? 0) - (a.dbId ?? 0));
+}
+P = normalize(BOOK.poems);
+const pageOf = i => i + 3; // 표지·차례·시인 소개 다음부터 쪽수
+async function loadPoems(){
+  if (!SB) return;
+  const { data, error } = await SB.from('poems').select('*').order('written_on', { ascending: false });
+  if (error) { console.warn('시를 불러오지 못했습니다', error); return; }
+  P = normalize(data); route();
+}
 
 // ---------- 해바라기 (씨앗은 황금각 137.5°로 배열) ----------
 function drawSunflower(cv, t){
@@ -243,7 +289,9 @@ function viewContents(){
     ${P.some(p=>p.sample) ? `<p class="note">지금은 화면을 보여 드리려고 김소월의 시(저작권 만료)를 예시로 넣어 두었습니다. 아버지 시로 바뀝니다.</p>` : ''}
     ${parts.map(pt => `<div class="part">${esc(pt)}</div><ol>${P.map((p,i)=>[p,i]).filter(([p])=>p.part===pt).map(([p,i]) =>
       `<li><a href="#${p.id}"><span class="t">${esc(p.title)}${p.sample?'<span class="sample">예시</span>':''}</span><span class="lead"></span><span class="n">${pageOf(i)}</span></a></li>`).join('')}</ol>`).join('')}
+    ${P.length ? '' : `<p class="note">아직 실린 시가 없습니다.</p>`}
     <a class="wordslink" href="#poet">시인을 소개합니다 →</a>
+    ${ADMIN ? `<a class="wordslink" href="#write">＋ 새 시 올리기</a>` : ''}
     <div class="pageno">— 1 —</div>
   </article>`;
 }
@@ -263,7 +311,8 @@ function viewPoet(){
 function viewPoem(i){
   const p = P[i], prev = P[i-1], next = P[i+1];
   return `<article class="sheet poem">
-    <figure class="photo"><img data-base="${esc(p.image || 'images/' + p.title)}" alt="${esc(p.title)}" hidden></figure>
+    <figure class="photo">${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.title)}">` : `<img data-base="${esc('images/' + p.title)}" alt="${esc(p.title)}" hidden>`}</figure>
+    ${ADMIN && p.dbId != null ? `<p class="adm"><a href="#edit-${p.dbId}">이 시 고치기</a></p>` : ''}
     ${miniFlower}
     <h2>${esc(p.title)}</h2>
     <p class="meta">${esc(p.date)}${p.sample?' · 예시':''}</p>
@@ -275,18 +324,107 @@ function viewPoem(i){
     <div class="pageno">— ${pageOf(i)} —</div>
   </article>`;
 }
+function viewAdmin(){
+  if (!SB) return `<article class="sheet form-sheet"><h2>시 올리기</h2><p class="note">아직 DB가 연결되지 않았습니다. 설정 안내(README)대로 Supabase 주소와 키를 넣으면 여기서 로그인할 수 있습니다.</p></article>`;
+  if (ADMIN) return `<article class="sheet form-sheet"><h2>시 올리기</h2><p class="center">${esc(EMAIL)} 로 로그인되어 있습니다.</p>
+    <div class="btns center"><a class="btn" href="#write">＋ 새 시 올리기</a><button class="btn ghost" type="button" data-logout>로그아웃</button></div></article>`;
+  return `<article class="sheet form-sheet"><h2>로그인</h2>
+    <form id="loginform" class="pform">
+      <label for="l-email">이메일</label><input id="l-email" type="email" autocomplete="username" required>
+      <label for="l-pw">비밀번호</label><input id="l-pw" type="password" autocomplete="current-password" required>
+      <div class="btns"><button class="btn" type="submit">로그인</button><span class="msg" id="lmsg"></span></div>
+    </form></article>`;
+}
+function viewWrite(p){
+  if (!ADMIN) return viewAdmin();
+  const today = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0, 10);
+  WRITE = { id: p ? p.dbId : null, image_path: p ? p.image_path : null, file: null, removeImage: false };
+  return `<article class="sheet form-sheet"><h2>${p ? '시 고치기' : '새 시 올리기'}</h2>
+    <form id="poemform" class="pform">
+      <label for="w-title">제목</label><input id="w-title" required value="${esc(p ? p.title : '')}">
+      <label for="w-date">쓴 날짜 <small>이 날짜로 차례의 몇 년 몇 월에 들어갑니다</small></label><input id="w-date" type="date" required value="${esc(p ? p.written_on : today)}">
+      <label for="w-body">시 <small>줄바꿈 그대로, 연 사이는 빈 줄 하나</small></label><textarea id="w-body" required rows="14">${esc(p ? p.body : '')}</textarea>
+      <label for="w-img">사진 <small>선택 · 큰 사진은 자동으로 줄여서 올립니다</small></label>
+      <div class="imgpick">
+        <img id="w-prev" alt="" ${p && p.imageUrl ? `src="${esc(p.imageUrl)}"` : 'hidden'}>
+        <input id="w-img" type="file" accept="image/*">
+        ${p && p.imageUrl ? `<label class="chk"><input type="checkbox" id="w-noimg"> 사진 빼기</label>` : ''}
+      </div>
+      <div class="btns">
+        <button class="btn" type="submit" id="w-save">${p ? '저장하기' : '올리기'}</button>
+        <a class="btn ghost" href="${p ? '#' + p.id : '#contents'}">취소</a>
+        ${p ? `<button class="btn danger" type="button" data-del="${p.dbId}">삭제</button>` : ''}
+        <span class="msg" id="wmsg"></span>
+      </div>
+    </form></article>`;
+}
+let WRITE = null;
+// 큰 사진은 긴 변 1600px JPEG로 줄입니다
+function shrink(file){
+  return new Promise(resolve => {
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return resolve(file);
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+      if (k === 1 && file.size < 1.5e6) { URL.revokeObjectURL(url); return resolve(file); }
+      const c = document.createElement('canvas'); c.width = Math.round(img.width*k); c.height = Math.round(img.height*k);
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(b => { URL.revokeObjectURL(url); resolve(b ? new File([b], 'photo.jpg', { type:'image/jpeg' }) : file); }, 'image/jpeg', 0.86);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+async function savePoem(){
+  const msg = $('#wmsg'), btn = $('#w-save');
+  const v = { title: $('#w-title').value.trim(), written_on: $('#w-date').value, body: $('#w-body').value.replace(/\r/g, '').replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n').trim() };
+  if (!v.title || !v.written_on || !v.body) { msg.className = 'msg err'; msg.textContent = '제목, 날짜, 시를 모두 넣어 주세요.'; return; }
+  btn.disabled = true; msg.className = 'msg'; msg.textContent = '올리는 중…';
+  let image_path = WRITE.image_path;
+  const noimg = $('#w-noimg') && $('#w-noimg').checked;
+  if (WRITE.file) {
+    const f = await shrink(WRITE.file);
+    const ext = f.type === 'image/png' ? 'png' : f.type === 'image/webp' ? 'webp' : 'jpg';
+    const path = `${v.written_on.slice(0, 7)}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+    const up = await SB.storage.from(BUCKET).upload(path, f, { contentType: f.type, upsert: false });
+    if (up.error) { btn.disabled = false; msg.className = 'msg err'; msg.textContent = '사진을 올리지 못했습니다: ' + up.error.message; return; }
+    if (image_path) SB.storage.from(BUCKET).remove([image_path]);
+    image_path = path;
+  } else if (noimg && image_path) { SB.storage.from(BUCKET).remove([image_path]); image_path = null; }
+  const row = { ...v, image_path, updated_at: new Date().toISOString() };
+  const res = WRITE.id != null ? await SB.from('poems').update(row).eq('id', WRITE.id).select().single()
+                               : await SB.from('poems').insert(row).select().single();
+  btn.disabled = false;
+  if (res.error) { msg.className = 'msg err'; msg.textContent = '저장하지 못했습니다: ' + res.error.message; return; }
+  await loadPoems();
+  location.hash = '#p' + res.data.id;
+  setTimeout(() => { FX.burst(innerWidth/2, 160, 40); Music.sparkle(true); }, 120);
+}
+async function deletePoem(btn){
+  if (!btn.classList.contains('armed')) { btn.classList.add('armed'); btn.textContent = '한 번 더 누르면 삭제됩니다'; return; }
+  btn.disabled = true;
+  const p = P.find(x => String(x.dbId) === btn.dataset.del);
+  const { error } = await SB.from('poems').delete().eq('id', +btn.dataset.del);
+  if (error) { $('#wmsg').className = 'msg err'; $('#wmsg').textContent = '삭제하지 못했습니다: ' + error.message; btn.disabled = false; return; }
+  if (p && p.image_path) SB.storage.from(BUCKET).remove([p.image_path]);
+  await loadPoems(); location.hash = '#contents';
+}
 function route(){
   const h = (location.hash || '#cover').slice(1);
   const i = P.findIndex(p => p.id === h);
   let html;
   if (i >= 0) html = viewPoem(i);
+  else if (h === 'admin') html = viewAdmin();
+  else if (h === 'write') html = viewWrite(null);
+  else if (h.startsWith('edit-')) { const p = P.find(x => String(x.dbId) === h.slice(5)); html = p ? viewWrite(p) : viewAdmin(); }
   else if (h === 'contents') html = viewContents();
   else if (h === 'poet' || h === 'words') html = viewPoet();
   else html = viewCover();
   $('#main').innerHTML = html;
   $('#nav-toc').toggleAttribute('aria-current', h === 'contents'); if (h === 'contents') $('#nav-toc').setAttribute('aria-current','page');
   $('#nav-words').toggleAttribute('aria-current', h === 'poet'); if (h === 'poet') $('#nav-words').setAttribute('aria-current','page');
-  document.querySelector('.top-in .name').style.visibility = (h === 'cover' || !h) && i < 0 && h !== 'contents' && h !== 'poet' ? 'hidden' : 'visible';
+  document.querySelector('.top-in .name').style.visibility = $('#sun') ? 'hidden' : 'visible';
+  $('#foot').innerHTML = `<a href="#admin">${ADMIN ? '시 올리기 · ' + esc(EMAIL) : '관리'}</a>`;
   if ($('#sun')) startFlower();
   FX.ambient(!!$('#sun'));
   document.querySelectorAll('img[data-base]').forEach(loadImage);
@@ -438,7 +576,29 @@ document.addEventListener('click', e => {
     setTimeout(() => { location.hash = '#contents'; }, 450);
   }
 });
+document.addEventListener('click', async e => {
+  const d = e.target.closest('[data-del]'); if (d) return deletePoem(d);
+  if (e.target.closest('[data-logout]')) { await SB.auth.signOut(); location.hash = '#contents'; }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'w-img' && e.target.files[0]) { WRITE.file = e.target.files[0]; const pv = $('#w-prev'); pv.src = URL.createObjectURL(WRITE.file); pv.hidden = false; }
+});
+document.addEventListener('submit', async e => {
+  e.preventDefault();
+  if (e.target.id === 'poemform') return savePoem();
+  if (e.target.id === 'loginform') {
+    const m = $('#lmsg'); m.className = 'msg'; m.textContent = '로그인 중…';
+    const { error } = await SB.auth.signInWithPassword({ email: $('#l-email').value.trim(), password: $('#l-pw').value });
+    if (error) { m.className = 'msg err'; m.textContent = '로그인하지 못했습니다. 이메일과 비밀번호를 확인해 주세요.'; return; }
+    location.hash = '#write';
+  }
+});
+if (SB) {
+  SB.auth.getSession().then(({ data }) => { ADMIN = !!data.session; EMAIL = ADMIN ? data.session.user.email : ''; route(); });
+  SB.auth.onAuthStateChange((_e, sess) => { const was = ADMIN; ADMIN = !!sess; EMAIL = sess ? sess.user.email : ''; if (was !== ADMIN) route(); });
+}
 document.addEventListener('keydown', e => {
+  if (/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
   const h = location.hash.slice(1), i = P.findIndex(p => p.id === h); if (i < 0) return;
   if (e.key === 'ArrowRight' && P[i+1]) location.hash = '#' + P[i+1].id;
   if (e.key === 'ArrowLeft' && P[i-1]) location.hash = '#' + P[i-1].id;
@@ -449,6 +609,7 @@ window.addEventListener('hashchange', () => {
   if (P.some(p => p.id === h) || h === 'poet') { const t = document.querySelector('.sheet h2'); if (t) { const r = t.getBoundingClientRect(); FX.twinkle(r.left + r.width/2, r.top + r.height/2); } Music.sparkle(false); }
 });
 route();
+loadPoems();
 </script>
 </body>
 </html>
