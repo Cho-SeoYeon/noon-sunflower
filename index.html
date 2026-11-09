@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="한낮의 해바라기 · 아버지의 시">
+<meta name="description" content="한낮의 해바라기 · 사랑이란 감정의 스펙트럼">
 <title>한낮의 해바라기</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,6 +73,7 @@ main{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px
 .toc li a .lead{flex:1;border-bottom:2px dotted var(--line);transform:translateY(-5px);min-width:20px}
 .toc li a .n{flex:none;font-family:var(--f-ui);font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 .toc li a:hover .t{color:var(--sun-deep)}
+.poet .wordslink{display:block;text-align:center;margin-top:30px;font-family:var(--f-ui);font-size:15px;color:var(--muted);text-decoration:none}
 .toc .wordslink{display:block;text-align:center;margin-top:30px;font-family:var(--f-ui);font-size:15px;color:var(--muted)}
 .sample{display:inline-block;font-family:var(--f-ui);font-size:12px;background:var(--paper);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:0 9px;margin-left:6px;vertical-align:3px}
 .note{font-family:var(--f-ui);font-size:14px;color:var(--muted);background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:10px 14px;margin:0 0 24px;line-height:1.7}
@@ -90,6 +91,28 @@ main{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px
 
 .photo{margin:-8px auto 30px;max-width:520px;background:#fff;padding:10px 10px 12px;border-radius:3px;box-shadow:0 1px 2px rgba(91,58,27,.12),0 14px 30px -18px rgba(91,58,27,.45);transform:rotate(-.6deg)}
 .photo img{display:block;width:100%;height:auto;border-radius:2px}
+.poet h2{font-family:var(--f-title);font-weight:800;font-size:28px;text-align:center;margin:0 0 28px;letter-spacing:.12em}
+.portrait{margin:0 auto 22px;width:min(100%,300px);background:#fff;padding:12px 12px 14px;border-radius:3px;box-shadow:0 1px 2px rgba(91,58,27,.12),0 16px 32px -18px rgba(91,58,27,.5);transform:rotate(1deg)}
+.portrait img{display:block;width:100%;height:auto;border-radius:2px}
+.portrait .ph{aspect-ratio:4/5;display:grid;place-content:center;justify-items:center;gap:10px;background:var(--paper);border-radius:2px;font-family:var(--f-ui);font-size:14px;color:var(--muted)}
+.portrait .ph .flower{width:54px;height:54px;margin:0}
+.pname{text-align:center;font-family:var(--f-title);font-weight:800;font-size:24px;margin:0 0 26px;letter-spacing:.06em}
+.pname span{display:block;font-family:var(--f-ui);font-weight:400;font-size:13px;color:var(--muted);letter-spacing:.3em;margin-bottom:2px}
+.intro{max-width:32em;margin:0 auto}
+.intro p{margin:0 0 1.2em;font-size:17px;line-height:2;text-indent:.6em}
+.facts{max-width:32em;margin:28px auto 0;padding:16px 0 0;border-top:1px solid var(--line);display:grid;gap:6px;font-family:var(--f-ui);font-size:15px}
+.facts div{display:flex;gap:14px}
+.facts dt{color:var(--muted);min-width:7.5em}
+.facts dd{margin:0}
+.top-in .short{display:none}
+@media (max-width:520px){.top-in .long{display:none}.top-in .short{display:inline}}
+.cover .spectrum{font-size:18px;margin:2px 0 4px;letter-spacing:.12em;color:var(--ink)}
+.cover .spectrum::after{content:"";display:block;height:3px;width:180px;margin:10px auto 0;border-radius:3px;background:linear-gradient(90deg,#F4A6A6,#F7C873,#F2E27A,#A9D99B,#9CC9E8,#B7A7E0);opacity:.85}
+.quote{margin:0 auto 30px;max-width:30em;text-align:center;padding:18px 20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative}
+.quote::before{content:"";position:absolute;left:50%;top:-2px;transform:translateX(-50%);width:120px;height:3px;border-radius:3px;background:linear-gradient(90deg,#F4A6A6,#F7C873,#F2E27A,#A9D99B,#9CC9E8,#B7A7E0)}
+.quote p{margin:0;white-space:pre-line;font-size:18px;line-height:2}
+.quote cite{display:block;margin-top:8px;font-style:normal;font-family:var(--f-ui);font-size:13.5px;color:var(--muted)}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:20}
 .words .body{font-size:17px;line-height:2;max-width:32em;margin:24px auto 0}
 
 /* 음악 안내 */
@@ -102,11 +125,12 @@ main{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px
   <div class="top-in">
     <a class="name" href="#cover">한낮의 해바라기</a>
     <a class="nav" href="#contents" id="nav-toc">차례</a>
-    <a class="nav" href="#words" id="nav-words">시인의 말</a>
+    <a class="nav" href="#poet" id="nav-words"><span class="long">시인을 소개합니다</span><span class="short">시인 소개</span></a>
     <button class="music" id="music" type="button" aria-pressed="false" aria-label="배경 음악 켜기"><span class="dot"></span><span class="lbl">음악 켜기</span></button>
   </div>
 </header>
 <main id="main"></main>
+<canvas id="fx" aria-hidden="true"></canvas>
 
 <script>
 // ===== 시 원고 =====
@@ -114,7 +138,19 @@ main{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px
 const BOOK = {
   title: '한낮의 해바라기',
   author: '아버지',
-  words: '아버지께 받은 "시인의 말"이 이 자리에 들어갑니다.\n\n시를 쓰게 된 이야기, 해바라기를 좋아하시는 이유,\n가족에게 하고 싶은 말 같은 것을\n아버지 말투 그대로 담으면 좋습니다.',
+  // 시인 소개: 사진은 images 폴더에 "시인.png"(또는 .jpg)로 넣으면 자동으로 붙습니다.
+  poet: {
+    name: '한낮의 해바라기',
+    photo: 'images/시인',
+    quote: '해석하지 않아도 금방 알아채는\n초보 창작시/자작시/사랑시를 쓰는 사람.\n사랑을 스펙트럼에 비추고 싶은 사람.',
+    intro: [
+      '아버지는 블로그 맨 위에 이렇게 적어 두었습니다. “창작시 : 사랑이란 감정의 스펙트럼?” 한 줄기 빛이 프리즘을 지나면 여러 빛깔로 갈라지듯, 아버지는 사랑을 한 가지 색으로 말하지 않습니다. 설레는 빛도, 아린 빛도, 오래 데워진 빛도 모두 사랑이라고 씁니다.',
+      '아버지의 시는 거창한 데서 시작하지 않습니다. 겨우내 말린 시래기, 밥상 위의 된장국 한 사발처럼 늘 곁에 있던 작은 것들을 오래 들여다보다가, 결국 곁에 있는 사람의 마음으로 건너갑니다. 그래서 해석하지 않아도 금방 마음에 닿습니다.',
+      '필명 ‘한낮의 해바라기’는 아버지가 좋아하는 꽃에서 왔습니다. 해가 가장 높이 뜬 한낮에도 해를 향해 고개를 드는 꽃처럼, 아버지의 시는 늘 따뜻한 쪽을 바라봅니다.',
+      '이곳은 블로그에 한 편씩 쌓여 온 아버지의 시를 한 권의 시집처럼 묶어 두려고 딸이 만든 공간입니다. 천천히 한 장씩 넘겨 가며 읽어 주세요.',
+    ],
+    facts: [['필명', '한낮의 해바라기'], ['쓰는 시', '창작시 · 자작시 · 사랑시'], ['좋아하는 꽃', '해바라기'], ['시를 쓰는 곳', '블로그']],
+  },
   // 이미지: images 폴더에 "제목.png"(또는 .jpg .jpeg .webp)로 넣으면 시 위에 자동으로 붙습니다.
   poems: [
     { id:'p1', part:'11월', title:'시래기 된장국', date:'11월 8일', body:
@@ -194,9 +230,10 @@ function viewCover(){
   return `<section class="cover">
     <canvas id="sun" width="680" height="680" aria-label="해바라기 그림"></canvas>
     <h1>${esc(BOOK.title)}</h1>
+    <p class="spectrum">사랑이란 감정의 스펙트럼</p>
     <p class="by">${esc(BOOK.author)}의 시 ${P.length}편</p>
     <button class="open" type="button" id="open">시집 펼치기</button>
-    <div class="hint">펼치면 잔잔한 피아노 음악이 함께 나옵니다</div>
+    <div class="hint">펼치면 새로 지은 노래 「해바라기 왈츠」가 함께 흐릅니다</div>
   </section>`;
 }
 function viewContents(){
@@ -206,12 +243,22 @@ function viewContents(){
     ${P.some(p=>p.sample) ? `<p class="note">지금은 화면을 보여 드리려고 김소월의 시(저작권 만료)를 예시로 넣어 두었습니다. 아버지 시로 바뀝니다.</p>` : ''}
     ${parts.map(pt => `<div class="part">${esc(pt)}</div><ol>${P.map((p,i)=>[p,i]).filter(([p])=>p.part===pt).map(([p,i]) =>
       `<li><a href="#${p.id}"><span class="t">${esc(p.title)}${p.sample?'<span class="sample">예시</span>':''}</span><span class="lead"></span><span class="n">${pageOf(i)}</span></a></li>`).join('')}</ol>`).join('')}
-    <a class="wordslink" href="#words">시인의 말 →</a>
+    <a class="wordslink" href="#poet">시인을 소개합니다 →</a>
     <div class="pageno">— 1 —</div>
   </article>`;
 }
-function viewWords(){
-  return `<article class="sheet words"><h2>시인의 말</h2>${miniFlower}<div class="body" style="white-space:pre-wrap">${esc(BOOK.words)}</div><div class="pageno">— 2 —</div></article>`;
+function viewPoet(){
+  const t = BOOK.poet;
+  return `<article class="sheet poet">
+    <h2>시인을 소개합니다</h2>
+    <figure class="portrait"><img data-base="${esc(t.photo)}" alt="${esc(t.name)} 사진" hidden><div class="ph">${miniFlower}<span>사진이 들어갈 자리</span></div></figure>
+    <div class="pname"><span>필명</span>${esc(t.name)}</div>
+    <blockquote class="quote"><p>${esc(t.quote)}</p><cite>시인이 블로그에 직접 쓴 소개</cite></blockquote>
+    <div class="intro">${t.intro.map(x => `<p>${esc(x)}</p>`).join('')}</div>
+    <dl class="facts">${[...t.facts, ['이 시집에 실린 시', P.length + '편']].map(([k,v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+    <a class="wordslink" href="#contents">시 읽으러 가기 →</a>
+    <div class="pageno">— 2 —</div>
+  </article>`;
 }
 function viewPoem(i){
   const p = P[i], prev = P[i-1], next = P[i+1];
@@ -234,100 +281,170 @@ function route(){
   let html;
   if (i >= 0) html = viewPoem(i);
   else if (h === 'contents') html = viewContents();
-  else if (h === 'words') html = viewWords();
+  else if (h === 'poet' || h === 'words') html = viewPoet();
   else html = viewCover();
   $('#main').innerHTML = html;
   $('#nav-toc').toggleAttribute('aria-current', h === 'contents'); if (h === 'contents') $('#nav-toc').setAttribute('aria-current','page');
-  $('#nav-words').toggleAttribute('aria-current', h === 'words'); if (h === 'words') $('#nav-words').setAttribute('aria-current','page');
-  document.querySelector('.top-in .name').style.visibility = (h === 'cover' || !h) && i < 0 && h !== 'contents' && h !== 'words' ? 'hidden' : 'visible';
+  $('#nav-words').toggleAttribute('aria-current', h === 'poet'); if (h === 'poet') $('#nav-words').setAttribute('aria-current','page');
+  document.querySelector('.top-in .name').style.visibility = (h === 'cover' || !h) && i < 0 && h !== 'contents' && h !== 'poet' ? 'hidden' : 'visible';
   if ($('#sun')) startFlower();
+  FX.ambient(!!$('#sun'));
   document.querySelectorAll('img[data-base]').forEach(loadImage);
 }
 // 제목과 같은 이름의 이미지를 확장자 순서대로 찾아 붙입니다
 const EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG'];
 function loadImage(img, k = 0){
-  if (k >= EXTS.length) { img.closest('figure').remove(); return; }
-  img.onload = () => { img.hidden = false; };
+  if (k >= EXTS.length) { if (!img.parentElement.querySelector('.ph')) img.closest('figure').remove(); else img.remove(); return; }
+  img.onload = () => { img.hidden = false; const ph = img.parentElement.querySelector('.ph'); if (ph) ph.remove(); };
   img.onerror = () => loadImage(img, k + 1);
   img.src = encodeURI(img.dataset.base + EXTS[k]);
 }
 
 // ---------- 음악: 이 페이지가 직접 연주하는 피아노곡 (새로 지은 곡이라 저작권 없음) ----------
 const Music = (() => {
-  let ac, master, verb, timer, nextTime = 0, step = 0, on = false;
-  const BPM = 66, BEAT = 60 / BPM;
+  // 「해바라기 왈츠」 — 이 페이지를 위해 새로 지은 3/4박자 곡 (G장조 16마디). 음원 파일 없이 브라우저가 직접 연주합니다.
+  let ac, master, fxBus, timer, nextTime = 0, step = 0, on = false;
+  const BPM = 100, BEAT = 60 / BPM, BAR = 3;
   const mf = m => 440 * Math.pow(2, (m - 69) / 12);
-  // F장조 8마디: F - Dm - B♭ - C - F - Dm - B♭ - C
-  const BASS = [[53,60,57,60],[50,57,53,57],[46,53,62,53],[48,55,64,55],[53,60,57,60],[50,57,53,57],[46,53,62,53],[48,55,64,60]];
+  const CH = { G:[43,[59,62]], Em:[40,[55,59]], C:[48,[55,64]], D:[50,[57,66]], Am:[45,[57,60]], Bm:[47,[62,66]] };
+  const PROG = ['G','Em','C','D','G','Em','Am','D','C','D','Bm','Em','C','D','G','G'];
   const MEL = [
-    [[0,69,1.5],[1.5,67,.5],[2,69,1],[3,72,1]],
-    [[0,74,2],[2,72,1],[3,69,1]],
-    [[0,70,1.5],[1.5,69,.5],[2,67,1],[3,65,1]],
-    [[0,67,3]],
-    [[0,69,1],[1,72,1],[2,77,1.5],[3.5,76,.5]],
-    [[0,74,1.5],[1.5,72,.5],[2,69,2]],
-    [[0,70,1],[1,74,1],[2,72,1],[3,67,1]],
-    [[0,67,1.5],[1.5,69,.5],[2,65,2]],
+    [[0,74,1],[1,71,1],[2,74,1]], [[0,76,2],[2,74,1]], [[0,72,1],[1,76,1],[2,79,1]], [[0,78,2],[2,74,1]],
+    [[0,71,1],[1,74,1],[2,79,1]], [[0,78,1],[1,76,1],[2,74,1]], [[0,72,1],[1,76,1],[2,72,1]], [[0,74,3]],
+    [[0,76,1.5],[1.5,74,.5],[2,72,1]], [[0,74,1.5],[1.5,72,.5],[2,71,1]], [[0,71,1],[1,74,1],[2,78,1]], [[0,79,2],[2,76,1]],
+    [[0,76,1],[1,72,1],[2,76,1]], [[0,78,1],[1,74,1],[2,81,1]], [[0,79,2],[2,74,1]], [[0,79,3]],
   ];
   function impulse(){
-    const len = ac.sampleRate * 2.8, buf = ac.createBuffer(2, len, ac.sampleRate);
-    for (let ch = 0; ch < 2; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.6); }
+    const len = ac.sampleRate * 2.6, buf = ac.createBuffer(2, len, ac.sampleRate);
+    for (let ch = 0; ch < 2; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.4); }
     return buf;
   }
-  function note(m, t, dur, vel){
-    const f = mf(m), g = ac.createGain(), lp = ac.createBiquadFilter();
-    lp.type = 'lowpass'; lp.frequency.value = 1800 + vel*1600;
+  function ensure(){
+    if (ac) return true;
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+    ac = new AC();
+    const verb = ac.createConvolver(); verb.buffer = impulse();
+    const wet = ac.createGain(); wet.gain.value = 0.4; verb.connect(wet).connect(ac.destination);
+    master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination); master.connect(verb);
+    fxBus = ac.createGain(); fxBus.gain.value = 0.5; fxBus.connect(ac.destination); fxBus.connect(verb);
+    return true;
+  }
+  // 피아노풍 (반주)
+  function piano(m, t, dur, vel, out){
+    const g = ac.createGain(), lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1600 + vel*2000;
     const o1 = ac.createOscillator(), o2 = ac.createOscillator(), g2 = ac.createGain();
-    o1.type = 'triangle'; o1.frequency.value = f;
-    o2.type = 'sine'; o2.frequency.value = f*2; g2.gain.value = 0.18;
-    o1.connect(g); o2.connect(g2).connect(g); g.connect(lp).connect(master);
-    const end = t + Math.max(dur*BEAT, 0.6) + 1.6;
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(vel, t + 0.012);
-    g.gain.exponentialRampToValueAtTime(vel*0.35, t + 0.35);
-    g.gain.exponentialRampToValueAtTime(0.0001, end);
-    o1.start(t); o2.start(t); o1.stop(end + 0.05); o2.stop(end + 0.05);
+    o1.type = 'triangle'; o1.frequency.value = mf(m); o2.type = 'sine'; o2.frequency.value = mf(m)*2; g2.gain.value = 0.15;
+    o1.connect(g); o2.connect(g2).connect(g); g.connect(lp).connect(out);
+    const end = t + Math.max(dur*BEAT, 0.5) + 1.2;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vel, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(vel*0.3, t + 0.3); g.gain.exponentialRampToValueAtTime(0.0001, end);
+    o1.start(t); o2.start(t); o1.stop(end + .05); o2.stop(end + .05);
+  }
+  // 오르골풍 (멜로디·효과음)
+  function bell(m, t, vel, out, len = 1.8){
+    const f = mf(m), g = ac.createGain();
+    [[1,1],[2.76,.28],[5.4,.1]].forEach(([r, a]) => {
+      const o = ac.createOscillator(), og = ac.createGain(); o.type = 'sine'; o.frequency.value = f*r; og.gain.value = a;
+      o.connect(og).connect(g); o.start(t); o.stop(t + len + .05);
+    });
+    g.connect(out);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vel, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
   }
   function schedule(){
     while (nextTime < ac.currentTime + 0.6) {
-      const bar = step % 8, loop = Math.floor(step / 8);
-      BASS[bar].forEach((m, k) => note(m, nextTime + k*BEAT, 1, 0.075 + Math.random()*0.015));
-      MEL[bar].forEach(([b, m, d]) => note(m + (loop % 2 ? 12 : 0) * (loop % 4 === 3 ? 1 : 0), nextTime + b*BEAT + Math.random()*0.012, d, 0.11 + Math.random()*0.02));
-      nextTime += 4*BEAT; step++;
+      const bar = step % 16, [root, up] = CH[PROG[bar]];
+      piano(root, nextTime, 1, 0.09, master);
+      [1, 2].forEach(b => up.forEach(m => piano(m, nextTime + b*BEAT, .8, 0.045, master)));
+      MEL[bar].forEach(([b, m, d]) => { const t = nextTime + b*BEAT + Math.random()*0.01; bell(m, t, 0.12, master, 1.2 + d*BEAT); piano(m, t, d, 0.05, master); });
+      nextTime += BAR*BEAT; step++;
     }
   }
   function start(){
-    if (!ac) {
-      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
-      ac = new AC(); master = ac.createGain(); master.gain.value = 0;
-      verb = ac.createConvolver(); verb.buffer = impulse();
-      const wet = ac.createGain(); wet.gain.value = 0.35;
-      master.connect(ac.destination); master.connect(verb).connect(wet).connect(ac.destination);
-    }
-    ac.resume();
-    master.gain.cancelScheduledValues(ac.currentTime);
-    master.gain.setTargetAtTime(0.55, ac.currentTime, 0.8);
-    nextTime = ac.currentTime + 0.1; clearInterval(timer); timer = setInterval(schedule, 120); schedule();
+    if (!ensure()) return false;
+    ac.resume(); master.gain.cancelScheduledValues(ac.currentTime); master.gain.setTargetAtTime(0.6, ac.currentTime, 0.8);
+    step = 0; nextTime = ac.currentTime + 0.15; clearInterval(timer); timer = setInterval(schedule, 120); schedule();
     on = true; return true;
   }
-  function stop(){ if (!ac) return; master.gain.setTargetAtTime(0, ac.currentTime, 0.4); setTimeout(() => { if (!on) { clearInterval(timer); ac.suspend(); } }, 1600); on = false; }
-  return { start, stop, get on(){ return on; } };
+  function stop(){ if (!ac) return; master.gain.setTargetAtTime(0, ac.currentTime, 0.4); on = false; setTimeout(() => { if (!on) clearInterval(timer); }, 1600); }
+  // 샤랄라 — 올라가는 반짝 음
+  function sparkle(big){
+    if (!on || !ensure()) return;
+    const notes = big ? [79,83,86,88,91,95,98,100] : [86,91,95];
+    notes.forEach((m, k) => bell(m, ac.currentTime + 0.02 + k*(big ? 0.055 : 0.07), big ? 0.09 : 0.06, fxBus, 1.4));
+  }
+  return { start, stop, sparkle, get on(){ return on; } };
+})();
+const FX = (() => {
+  const cv = document.getElementById('fx'), ctx = cv.getContext('2d');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const HUES = ['#F4A6A6','#F7C873','#F2E27A','#A9D99B','#9CC9E8','#B7A7E0'];
+  let parts = [], running = false, dpr = 1, ambientOn = false, lastAmb = 0;
+  function size(){ dpr = Math.min(2, window.devicePixelRatio || 1); cv.width = innerWidth*dpr; cv.height = innerHeight*dpr; }
+  size(); addEventListener('resize', size);
+  function petal(x, y, vx, vy){ return {k:'p', x, y, vx, vy, r: 5 + Math.random()*5, a: Math.random()*6.28, va: (Math.random()-.5)*.12, life: 1, decay: .004 + Math.random()*.004}; }
+  function star(x, y, vx, vy){ return {k:'s', x, y, vx, vy, r: 2.5 + Math.random()*4, c: HUES[Math.random()*HUES.length|0], life: 1, decay: .012 + Math.random()*.012, tw: Math.random()*6.28}; }
+  function burst(x, y, n = 36){
+    if (still) return;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random()*Math.PI*2, sp = 1.5 + Math.random()*4.5;
+      parts.push(i % 3 ? star(x, y, Math.cos(a)*sp, Math.sin(a)*sp - 1.5) : petal(x, y, Math.cos(a)*sp*.7, Math.sin(a)*sp*.7 - 2));
+    }
+    run();
+  }
+  function twinkle(x, y){ if (still) return; for (let i = 0; i < 10; i++) parts.push(star(x + (Math.random()-.5)*160, y + (Math.random()-.5)*30, (Math.random()-.5)*.6, -.3 - Math.random()*.6)); run(); }
+  function ambient(v){ ambientOn = v && !still; if (ambientOn) run(); }
+  function drawStar(p){
+    const r = p.r * (0.7 + 0.3*Math.sin(p.tw)); ctx.fillStyle = p.c; ctx.globalAlpha = Math.max(0, p.life);
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) { const a = i*Math.PI/4, rr = i % 2 ? r*.32 : r; ctx.lineTo(p.x + Math.cos(a)*rr*dpr, p.y + Math.sin(a)*rr*dpr); }
+    ctx.closePath(); ctx.fill();
+  }
+  function drawPetal(p){
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.globalAlpha = Math.max(0, Math.min(1, p.life*1.4));
+    ctx.fillStyle = '#F2B705'; ctx.beginPath(); ctx.ellipse(0, 0, p.r*.45*dpr, p.r*dpr, 0, 0, Math.PI*2); ctx.fill(); ctx.restore();
+  }
+  function frame(t){
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    if (ambientOn && t - lastAmb > 650) { lastAmb = t; parts.push(Object.assign(petal(Math.random()*cv.width/dpr, -20, (Math.random()-.3)*.6, .6 + Math.random()*.6), {decay: .0018})); if (Math.random() < .6) parts.push(Object.assign(star(Math.random()*cv.width/dpr, Math.random()*cv.height/dpr*.6, 0, -.15), {decay: .008})); }
+    parts = parts.filter(p => p.life > 0 && p.y < cv.height/dpr + 40);
+    for (const p of parts) {
+      p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+      if (p.k === 'p') { p.vy = Math.min(p.vy + .05, 1.6); p.vx *= .99; p.vx += Math.sin(t/600 + p.r)*.02; p.a += p.va; }
+      else { p.vy += .03; p.vx *= .98; p.tw += .25; }
+      const q = {...p, x: p.x*dpr, y: p.y*dpr};
+      p.k === 'p' ? drawPetal(q) : drawStar(q);
+    }
+    ctx.globalAlpha = 1;
+    if (parts.length || ambientOn) requestAnimationFrame(frame); else running = false;
+  }
+  function run(){ if (!running) { running = true; requestAnimationFrame(frame); } }
+  return { burst, twinkle, ambient };
 })();
 function setMusicUI(){
   const b = $('#music'); b.setAttribute('aria-pressed', String(Music.on));
   b.querySelector('.lbl').textContent = Music.on ? '음악 끄기' : '음악 켜기';
   b.setAttribute('aria-label', Music.on ? '배경 음악 끄기' : '배경 음악 켜기');
+  b.title = '해바라기 왈츠 · 이 시집을 위해 새로 지은 곡';
 }
 $('#music').addEventListener('click', () => { Music.on ? Music.stop() : Music.start(); setMusicUI(); });
 document.addEventListener('click', e => {
-  if (e.target.id === 'open') { if (!Music.on) Music.start(); setMusicUI(); location.hash = '#contents'; }
+  if (e.target.id === 'open') {
+    const r = e.target.getBoundingClientRect();
+    if (!Music.on) Music.start(); setMusicUI();
+    FX.burst(r.left + r.width/2, r.top + r.height/2, 48); setTimeout(() => Music.sparkle(true), 60);
+    setTimeout(() => { location.hash = '#contents'; }, 450);
+  }
 });
 document.addEventListener('keydown', e => {
   const h = location.hash.slice(1), i = P.findIndex(p => p.id === h); if (i < 0) return;
   if (e.key === 'ArrowRight' && P[i+1]) location.hash = '#' + P[i+1].id;
   if (e.key === 'ArrowLeft' && P[i-1]) location.hash = '#' + P[i-1].id;
 });
-window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
+window.addEventListener('hashchange', () => {
+  route(); window.scrollTo(0, 0);
+  const h = location.hash.slice(1);
+  if (P.some(p => p.id === h) || h === 'poet') { const t = document.querySelector('.sheet h2'); if (t) { const r = t.getBoundingClientRect(); FX.twinkle(r.left + r.width/2, r.top + r.height/2); } Music.sparkle(false); }
+});
 route();
 </script>
 </body>
