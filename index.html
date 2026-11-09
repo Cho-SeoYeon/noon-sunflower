@@ -102,6 +102,14 @@ main{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px
 .intro{text-align:center}
 .intro p{margin:0 0 2.1em;font-size:17px;line-height:2.05;white-space:pre-line}
 .intro p:last-child{margin-bottom:0}
+.intro .sf{display:block;margin:-1em auto 1.1em;width:18px;height:18px}
+.intro .sf .flower{width:18px;height:18px;margin:0;animation:sway 5s ease-in-out infinite}
+.intro .sf:nth-of-type(2n) .flower{animation-delay:-2.5s}
+@keyframes sway{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}}
+.endmark{display:flex;justify-content:center;gap:10px;margin-top:34px}
+.endmark .flower{width:14px;height:14px;margin:0;opacity:.8}
+.endmark .flower:nth-child(2){width:18px;height:18px;opacity:1}
+.toc .part .flower{width:16px;height:16px;margin:0;flex:none}
 .intro.from{margin-top:38px;color:var(--muted)}
 .intro.from .flower{display:block;width:22px;height:22px;margin:0 auto 26px;opacity:.85}
 .intro.from p{margin-bottom:1.5em}
@@ -297,7 +305,7 @@ function viewContents(){
   return `<article class="sheet toc">
     <h2>차례</h2><p class="sub">${esc(BOOK.author)}의 시 ${P.length}편</p>
     ${P.some(p=>p.sample) ? `<p class="note">지금은 화면을 보여 드리려고 김소월의 시(저작권 만료)를 예시로 넣어 두었습니다. 아버지 시로 바뀝니다.</p>` : ''}
-    ${parts.map(pt => `<div class="part">${esc(pt)}</div><ol>${P.map((p,i)=>[p,i]).filter(([p])=>p.part===pt).map(([p,i]) =>
+    ${parts.map(pt => `<div class="part">${miniFlower}${esc(pt)}</div><ol>${P.map((p,i)=>[p,i]).filter(([p])=>p.part===pt).map(([p,i]) =>
       `<li><a href="#${p.id}"><span class="t">${esc(p.title)}${p.sample?'<span class="sample">예시</span>':''}</span><span class="lead"></span><span class="n">${pageOf(i)}</span></a></li>`).join('')}</ol>`).join('')}
     ${P.length ? '' : `<p class="note">아직 실린 시가 없습니다.</p>`}
     <a class="wordslink" href="#poet">시인을 소개합니다 →</a>
@@ -312,7 +320,7 @@ function viewPoet(){
     <figure class="portrait"><img data-base="${esc(t.photo)}" alt="${esc(t.name)} 사진" hidden><div class="ph">${miniFlower}<span>사진이 들어갈 자리</span></div></figure>
     <div class="pname"><span>필명</span>${esc(t.name)}</div>
     <blockquote class="quote"><p>${esc(t.quote)}</p><cite>시인이 블로그에 직접 쓴 소개</cite></blockquote>
-    <div class="intro">${t.intro.map(x => `<p>${esc(x)}</p>`).join('')}</div>
+    <div class="intro">${t.intro.map(x => `<p>${esc(x)}</p>`).join(`<span class="sf" aria-hidden="true">${miniFlower}</span>`)}</div>
     <div class="intro from">${miniFlower}${t.from.map(x => `<p>${esc(x)}</p>`).join('')}</div>
     <dl class="facts">${[...t.facts, ['이 시집에 실린 시', P.length + '편']].map(([k,v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
     <a class="wordslink" href="#contents">시 읽으러 가기 →</a>
@@ -328,6 +336,7 @@ function viewPoem(i){
     <h2>${esc(p.title)}</h2>
     <p class="meta">${esc(p.date)}${p.sample?' · 예시':''}</p>
     <div class="body">${esc(p.body)}</div>
+    <div class="endmark" aria-hidden="true">${miniFlower}${miniFlower}${miniFlower}</div>
     <nav class="turn" aria-label="시 넘기기">
       ${prev ? `<a href="#${prev.id}">← 앞 장<b>${esc(prev.title)}</b></a>` : `<a href="#contents">← 차례로</a>`}
       ${next ? `<a class="next" href="#${next.id}">다음 장 →<b>${esc(next.title)}</b></a>` : `<a class="next" href="#contents">차례로 →</a>`}
