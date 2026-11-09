@@ -99,7 +99,12 @@ main{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px
 .pname{text-align:center;font-family:var(--f-title);font-weight:800;font-size:24px;margin:0 0 26px;letter-spacing:.06em}
 .pname span{display:block;font-family:var(--f-ui);font-weight:400;font-size:13px;color:var(--muted);letter-spacing:.3em;margin-bottom:2px}
 .intro{max-width:32em;margin:0 auto}
-.intro p{margin:0 0 1.2em;font-size:17px;line-height:2;text-indent:.6em}
+.intro{text-align:center}
+.intro p{margin:0 0 2.1em;font-size:17px;line-height:2.05;white-space:pre-line}
+.intro p:last-child{margin-bottom:0}
+.intro.from{margin-top:38px;color:var(--muted)}
+.intro.from .flower{display:block;width:22px;height:22px;margin:0 auto 26px;opacity:.85}
+.intro.from p{margin-bottom:1.5em}
 .facts{max-width:32em;margin:28px auto 0;padding:16px 0 0;border-top:1px solid var(--line);display:grid;gap:6px;font-family:var(--f-ui);font-size:15px}
 .facts div{display:flex;gap:14px}
 .facts dt{color:var(--muted);min-width:7.5em}
@@ -168,10 +173,15 @@ const BOOK = {
     photo: 'images/시인',
     quote: '해석하지 않아도 금방 알아채는\n초보 창작시/자작시/사랑시를 쓰는 사람.\n사랑을 스펙트럼에 비추고 싶은 사람.',
     intro: [
-      '아버지는 블로그 맨 위에 이렇게 적어 두었습니다. “창작시 : 사랑이란 감정의 스펙트럼?” 한 줄기 빛이 프리즘을 지나면 여러 빛깔로 갈라지듯, 아버지는 사랑을 한 가지 색으로 말하지 않습니다. 설레는 빛도, 아린 빛도, 오래 데워진 빛도 모두 사랑이라고 씁니다.',
-      '아버지의 시는 거창한 데서 시작하지 않습니다. 겨우내 말린 시래기, 밥상 위의 된장국 한 사발처럼 늘 곁에 있던 작은 것들을 오래 들여다보다가, 결국 곁에 있는 사람의 마음으로 건너갑니다. 그래서 해석하지 않아도 금방 마음에 닿습니다.',
-      '필명 ‘한낮의 해바라기’는 아버지가 좋아하는 꽃에서 왔습니다. 해가 가장 높이 뜬 한낮에도 해를 향해 고개를 드는 꽃처럼, 아버지의 시는 늘 따뜻한 쪽을 바라봅니다.',
-      '이곳은 블로그에 한 편씩 쌓여 온 아버지의 시를 한 권의 시집처럼 묶어 두려고 딸이 만든 공간입니다. 천천히 한 장씩 넘겨 가며 읽어 주세요.',
+      '블로그 맨 위에\n아버지는 이렇게 적어 두었습니다.\n“창작시 : 사랑이란 감정의 스펙트럼”',
+      '한 줄기 빛이 프리즘을 지나면\n여러 빛깔로 갈라지듯,\n아버지는 사랑을\n한 가지 색으로 말하지 않습니다.\n설레는 빛도, 아린 빛도,\n오래 데워진 빛도\n모두 사랑이라고 씁니다.',
+      '아버지의 시는\n거창한 데서 시작하지 않습니다.\n겨우내 말린 시래기,\n밥상 위의 된장국 한 사발처럼\n늘 곁에 있던 작은 것들을\n오래 들여다보다가\n결국 곁에 있는 사람의\n마음으로 건너갑니다.\n그래서 해석하지 않아도\n금방 마음에 닿습니다.',
+      '필명 ‘한낮의 해바라기’는\n아버지가 좋아하는 꽃에서 왔습니다.\n해가 가장 높이 뜬 한낮에도\n해를 향해 고개를 드는 꽃처럼,\n아버지의 시는\n늘 따뜻한 쪽을 바라봅니다.',
+    ],
+    from: [
+      '시를 쓰는 것은 아버지의 취미입니다.\n그런 아버지에게\n작은 선물을 드리고 싶어\n딸이 이 공간을 만들었습니다.',
+      '별것 아닐지라도\n아버지의 시만 오롯이\n모아 볼 수 있는 곳이\n하나쯤 있으면 좋겠다는 마음으로요.',
+      '천천히 한 장씩 넘겨 가며\n읽어 주세요.',
     ],
     facts: [['필명', '한낮의 해바라기'], ['쓰는 시', '창작시 · 자작시 · 사랑시'], ['좋아하는 꽃', '해바라기'], ['시를 쓰는 곳', '블로그']],
   },
@@ -303,6 +313,7 @@ function viewPoet(){
     <div class="pname"><span>필명</span>${esc(t.name)}</div>
     <blockquote class="quote"><p>${esc(t.quote)}</p><cite>시인이 블로그에 직접 쓴 소개</cite></blockquote>
     <div class="intro">${t.intro.map(x => `<p>${esc(x)}</p>`).join('')}</div>
+    <div class="intro from">${miniFlower}${t.from.map(x => `<p>${esc(x)}</p>`).join('')}</div>
     <dl class="facts">${[...t.facts, ['이 시집에 실린 시', P.length + '편']].map(([k,v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
     <a class="wordslink" href="#contents">시 읽으러 가기 →</a>
     <div class="pageno">— 2 —</div>
